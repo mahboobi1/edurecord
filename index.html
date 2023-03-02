@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Simple Drawing Pad</title>
+    <style>
+      #container {
+        position: relative;
+        display: inline-block;
+      }
+
+      #canvas {
+        border: 1px solid black;
+      }
+
+      #face {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+     
+        border-radius: 50%;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <canvas id="canvas" width="1280" height="720"></canvas>
+      <div id="face"></div>
+    </div>
+    <button id="black-1px" onclick="setPenColor('black'); setPenSize(1);">Black 1px</button>
+    <button id="white-10px" onclick="setPenColor('white'); setPenSize(10);">White 10px</button>
+    <button id="clear" onclick="clearCanvas();">Clear</button>
+    <script>
+      // Get the canvas element and context
+      var canvas = document.getElementById("canvas");
+      var context = canvas.getContext("2d");
+
+      // Set the initial pen color and size
+      var penColor = "black";
+      var penSize = 1;
+
+      // Set up event listeners for mouse and touch events
+      canvas.addEventListener("mousedown", startDrawing);
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseup", stopDrawing);
+      canvas.addEventListener("touchstart", startDrawing);
+      canvas.addEventListener("touchmove", draw);
+      canvas.addEventListener("touchend", stopDrawing);
+
+      // Function to set the pen color
+      function setPenColor(color) {
+        penColor = color;
+        context.strokeStyle = color;
+      }
+
+      // Function to set the pen size
+      function setPenSize(size) {
+        penSize = size;
+        context.lineWidth = size;
+      }
+
+      // Flag to indicate whether the pen is currently down
+      var isDrawing = false;
+
+      // Function to start drawing
+      function startDrawing(event) {
+        // Move the pen to the starting position
+        context.beginPath();
+        context.moveTo(event.offsetX, event.offsetY);
+
+        // Set the pen down
+        isDrawing = true;
+      }
+
+      // Function to draw
+      function draw(event) {
+        // Only draw if the pen is down
+        if (!isDrawing) {
+          return;
+        }
+
+        // Set the pen color and size
+        context.strokeStyle = penColor;
+        context.lineWidth = penSize;
+
+        // Draw a line from the previous position to the current position
+        context.lineTo(event.offsetX, event.offsetY);
+        context.stroke();
+
+        // Move the pen to the current position
+        context.beginPath();
+        context.moveTo(event.offsetX, event.offsetY);
+      }
+
+      // Function to stop drawing
+      function stopDrawing(event) {
+        // Set the pen up
+        isDrawing = false;
+      }
+
+      // Function to clear the canvas
+      function clearCanvas() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Get the face element and the video stream from the camera
+      var face = document.getElementById("face");
+      navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+      // Create a video element to display the camera stream
+      var video = document.createElement("video");
+      video.srcObject = stream;
+      video.autoplay = true;
+      video.style.width = "130%";
+      video.style.height = "130%";
+
+      // Add the video element to the face element
+      face.appendChild(video);
+    })
+    .catch(function(error) {
+      console.error("Could not access camera: " + error.message);
+    });
+</script>
+
+       
+</body>
+</html>
