@@ -23,6 +23,10 @@
         border-radius: 50%;
         overflow: hidden;
       }
+
+
+
+
     </style>
   </head>
   <body>
@@ -30,9 +34,10 @@
       <canvas id="canvas" width="1280" height="720"></canvas>
       <div id="face"></div>
     </div>
+
     <button id="black-1px" onclick="setPenColor('black'); setPenSize(1);">Black 1px</button>
-    <button id="white-10px" onclick="setPenColor('white'); setPenSize(10);">White 10px</button>
-    <button id="clear" onclick="clearCanvas();">Clear</button>
+<button id="white-10px" onclick="setPenColor('white'); setPenSize(10);">White 10px</button>
+<button id="clear" onclick="clearCanvas();">Clear</button>
     <script>
       // Get the canvas element and context
       var canvas = document.getElementById("canvas");
@@ -69,7 +74,7 @@
       function startDrawing(event) {
         // Move the pen to the starting position
         context.beginPath();
-        context.moveTo(event.offsetX, event.offsetY);
+        context.moveTo(getX(event), getY(event));
 
         // Set the pen down
         isDrawing = true;
@@ -87,12 +92,12 @@
         context.lineWidth = penSize;
 
         // Draw a line from the previous position to the current position
-        context.lineTo(event.offsetX, event.offsetY);
+        context.lineTo(getX(event), getY(event));
         context.stroke();
 
         // Move the pen to the current position
         context.beginPath();
-        context.moveTo(event.offsetX, event.offsetY);
+        context.moveTo(getX(event), getY(event));
       }
 
       // Function to stop drawing
@@ -101,29 +106,23 @@
         isDrawing = false;
       }
 
-      // Function to clear the canvas
-      function clearCanvas() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+      // Function to get the X coordinate of a mouse or touch event
+      function getX(event) {
+        if (event.type.startsWith("touch")) {
+          return event.touches[0].clientX - canvas.offsetLeft;
+        } else {
+          return event.offsetX;
+        }
       }
 
-      // Get the face element and the video stream from the camera
-      var face = document.getElementById("face");
-      navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-      // Create a video element to display the camera stream
-      var video = document.createElement("video");
-      video.srcObject = stream;
-      video.autoplay = true;
-      video.style.width = "130%";
-      video.style.height = "130%";
-
-      // Add the video element to the face element
-      face.appendChild(video);
-    })
-    .catch(function(error) {
-      console.error("Could not access camera: " + error.message);
-    });
-</script>
-
-       
-</body>
+      // Function to get the Y coordinate of a mouse or touch event
+      function getY(event) {
+        if (event.type.startsWith("touch")) {
+          return event.touches[0].clientY - canvas.offsetTop;
+        } else {
+          return event.offsetY;
+        }
+      }
+    </script>
+  </body>
 </html>
